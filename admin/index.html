@@ -81,6 +81,16 @@
                 }
             }
         })
+
+
+        // 退出登录
+        $('.logout').on('click',function(e){
+            e.preventDefault();
+            if(confirm('你确定要退出吗?')){
+                localStorage.removeItem('token');
+                window.location.href = './login.html';
+            }
+        })
     })
 </script>
 
