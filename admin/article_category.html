@@ -76,7 +76,7 @@
                     </form>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal" id="cancel">取消</button>
                     <button type="button" class="btn btn-primary" id="add">Send message</button>
                 </div>
             </div>
@@ -90,24 +90,24 @@
         <td>{{v.slug}}</td>
         <td class="text-center">
             <a href="javascript:void(0)" data-id="{{v.id}}" data-toggle="modal" data-target="#myModal" class=" btn btn-info btn-xs">编辑</a>
-            <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs">删除</a>
+            <a href="javascript:void(0)" data-id="{{v.id}}" class="btn btn-danger btn-xs" id="del" >删除</a>
         </td>
     </tr>
     {{/each}}
 </script>
 <script src="./libs/http.js"></script>
 <script>
-    function getNew(){
+    function getNew() {
         $.ajax({
-        type: 'get',
-        url: BigNew.category_list,
-        success: function (back) {
-            if (back.code == 200) {
-                let res = template('temp', back);
-                $('tbody').html(res);
+            type: 'get',
+            url: BigNew.category_list,
+            success: function (back) {
+                if (back.code == 200) {
+                    let res = template('temp', back);
+                    $('tbody').html(res);
+                }
             }
-        }
-    });
+        });
     }
     getNew();
 
@@ -125,6 +125,7 @@
         }
     });
 
+    // 模态框的点击新增编辑功能
     $('#add').on('click', function () {
         if ($(this).text() == '新增') {
             let addName = $('#recipient-name').val().trim();
@@ -163,7 +164,7 @@
                     slug: editSlug,
                 },
                 success: function (back) {
-                    if(back.code==200){
+                    if (back.code == 200) {
                         getNew();
                         $('#recipient-name').val('');
                         $('#message-text').val('');
@@ -172,7 +173,38 @@
                 }
             })
         }
+    });
+
+    // 新增时点击取消
+    $('#cancel').on('click', function () {
+        //方法1
+        // $('#recipient-name').val('');
+        // $('#message-text').val('');
+
+        //方法2
+        $('#myModal form')[0].reset();
     })
+
+    // 删除点击事件（未来事件）
+    $('tbody').on('click', '#del', function () {
+        if (confirm('你确定要删除吗?')) {
+            let delID = $(this).attr('data-id');
+
+            $.ajax({
+                type: 'post',
+                url: BigNew.category_delete,
+                data: {
+                    id: delID,
+                },
+                success: function (back) {
+                    if (back.code == 204) {
+                        getNew();
+                    }
+                }
+            })
+        }
+    });
+
 </script>
 
 </html>
