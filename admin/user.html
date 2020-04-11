@@ -70,4 +70,68 @@
     </div>
 </body>
 
+<script src="./libs/http.js"></script>
+<script>
+    $(function () {
+        $.ajax({
+            type: 'get',
+            url: BigNew.user_detail,
+            success: function (back) {
+                if (back.code == 200) {
+                    // $('.username').val(back.data.username);
+                    // $('.nickname').val(back.data.nickname);
+                    // $('.email').val(back.data.email);
+                    // $('.password').val(back.data.password);
+
+                    for (let k in back.data) {
+                        $('.' + k).val(back.data[k]);
+                    };
+                    $('img.user_pic').attr('src', back.data.userPic);
+                }
+            }
+        });
+
+        $('#exampleInputFile').on('change', function () {
+            let file = this.files[0];
+            let url = URL.createObjectURL(file);
+            $('.user_pic').attr('src', url);
+        });
+
+        $('.btn-edit').on('click', function (e) {
+            e.preventDefault();
+            let form = document.querySelector('form');
+            let fd = new FormData(form);
+
+            $.ajax({
+                type: 'post',
+                url: BigNew.user_edit,
+                data: fd,
+                contentType: false,
+                processData: false,
+                success: function (back) {
+                    if (back.code == 200) {
+                        alert('更新成功');
+                        $.ajax({
+                            type: 'get',
+                            url: BigNew.user_info,
+                            // headers: {
+                            //     'Authorization': localStorage.getItem('token')
+                            // },
+                            success: function (back) {
+                                if (back.code == 200) {
+                                    // parent.window.location.reload();
+                                    
+                                    parent.$('.user_info>span>p').text(back.data.nickname);
+                                    parent.$('.user_info>img').attr('src', back.data.userPic);
+                                    parent.$('.user_center_link>img').attr('src', back.data.userPic);
+                                }
+                            }
+                        })
+                    }
+                }
+            })
+        })
+    })
+</script>
+
 </html>
