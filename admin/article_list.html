@@ -11,6 +11,8 @@
     <link rel="stylesheet" href="./css/iconfont.css">
     <link rel="stylesheet" href="./css/main.css">
     <script src="./libs/jquery-1.12.4.min.js"></script>
+    <script src="./libs/bootstrap.min.js"></script>
+    <script src="./libs/jquery.twbsPagination.js"></script>
     <!-- 引入模板引擎js文件 -->
     <script src="./libs/template-web.js"></script>
 </head>
@@ -69,14 +71,32 @@
                 </tbody>
             </table>
             <div class="row text-center">
+                <!-- 分页 -->
+                <ul class="pagination" id="pagination"></ul>
+                <p>暂时没有数据哦~</p>
             </div>
         </div>
     </div>
 </body>
-<script id="temp" type="text">
+<script id="temp1" type="text">
     <option value="">所有分类</option>
     {{each data v}}
     <option value="{{v.id}}">{{v.name}}</option>
+    {{/each}}
+</script>
+<script id="temp2" type="text">
+    {{each data.data v}}
+    <tr>
+        <td>{{v.title}}</td>
+        <td>{{v.author}}</td>
+        <td>{{v.category}}</td>
+        <td class="text-center">{{v.date}}</td>
+        <td class="text-center">{{v.state}}</td>
+        <td class="text-center">
+            <a href="article_edit.html" class="btn btn-default btn-xs">编辑</a>
+            <a href="javascript:void(0);" data-id="{{v.id}}" class="btn btn-danger btn-xs delete">删除</a>
+        </td>
+    </tr>
     {{/each}}
 </script>
 <script src="./libs/http.js"></script>
@@ -87,12 +107,151 @@
             url: BigNew.category_list,
             success: function (back) {
                 if (back.code == 200) {
-                    let res = template('temp', back);
+                    let res = template('temp1', back);
                     $('#selCategory').html(res);
                 }
             }
         });
+
+        function getData(page, callback) {
+            $.ajax({
+                type: 'get',
+                url: BigNew.article_query,
+                data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
+                    page: page,
+                    perpage: 6
+                },
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('temp2', back);
+                        $('tbody').html(res);
+                        // callback函数是看你想干什么，自行修改
+                        if (back.data.data.length != 0 && callback != null) {
+                            $('#pagination').show().next().hide();
+                            callback(back);
+                        } else if(back.data.data.length==0){
+                            $('#pagination').hide().next().show();
+                        }
+                    }
+                }
+            })
+        };
+
+        getData(1, function (back) {
+            // 分页插件的方法
+            $('#pagination').twbsPagination({
+                totalPages: back.data.totalPage,
+                visiblePages: 7,
+                first: '首页',
+                prev: '上一页',
+                next: '下一页',
+                last: '尾页',
+                onPageClick: function (event, page) {
+                    getData(page);
+                }
+            });
+        })
+
+        $('#btnSearch').on('click', function (e) {
+            e.preventDefault();
+            getData(1, function (back) {
+                $('#pagination').twbsPagination('changeTotalPages', back.data.totalPage, 1);
+            })
+
+        })
     })
+
+
 </script>
+
+
+<!-- 未封装时的方法  上面是封装之后的做法 -->
+<!-- <script>
+    $(function () {
+        $.ajax({
+            type: 'get',
+            url: BigNew.category_list,
+            success: function (back) {
+                if (back.code == 200) {
+                    let res = template('temp1', back);
+                    $('#selCategory').html(res);
+                }
+            }
+        });
+
+        $.ajax({
+            type: 'get',
+            url: BigNew.article_query,
+            data: {
+                type: $('#selCategory').val(),
+                state: $('#selStatus').val(),
+                page: 1,
+                perpage: 6
+            },
+            success: function (back) {
+                if (back.code == 200) {
+                    let res = template('temp2', back);
+                    $('tbody').html(res);
+
+                    // 分页插件的方法
+                    $('#pagination').twbsPagination({
+                        totalPages: back.data.totalPage,
+                        visiblePages: 7,
+                        first: '首页',
+                        prev: '上一页',
+                        next: '下一页',
+                        last: '尾页',
+                        onPageClick: function (event, page) {
+                            $.ajax({
+                                type: 'get',
+                                url: BigNew.article_query,
+                                data: {
+                                    type: $('#selCategory').val(),
+                                    state: $('#selStatus').val(),
+                                    page: page,
+                                    perpage: 6
+                                },
+                                success: function (back) {
+                                    if (back.code == 200) {
+                                        let res = template('temp2', back);
+                                        $('tbody').html(res);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                }
+            }
+        });
+
+        $('#btnSearch').on('click', function (e) {
+            e.preventDefault();
+            $.ajax({
+                type: 'get',
+                url: BigNew.article_query,
+                data: {
+                    type: $('#selCategory').val(),
+                    state: $('#selStatus').val(),
+                    page: 1,
+                    perpage: 6
+                },
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('temp2', back);
+                        $('tbody').html(res);
+
+                        // 重新筛选,页码数需要发生改变
+                        $('#pagination').twbsPagination('changeTotalPages', back.data.totalPage, 1);
+                    }
+                }
+            });
+
+        })
+    })
+
+
+</script> -->
 
 </html>
