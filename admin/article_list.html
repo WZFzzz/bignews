@@ -73,5 +73,26 @@
         </div>
     </div>
 </body>
+<script id="temp" type="text">
+    <option value="">所有分类</option>
+    {{each data v}}
+    <option value="{{v.id}}">{{v.name}}</option>
+    {{/each}}
+</script>
+<script src="./libs/http.js"></script>
+<script>
+    $(function () {
+        $.ajax({
+            type: 'get',
+            url: BigNew.category_list,
+            success: function (back) {
+                if (back.code == 200) {
+                    let res = template('temp', back);
+                    $('#selCategory').html(res);
+                }
+            }
+        });
+    })
+</script>
 
 </html>
