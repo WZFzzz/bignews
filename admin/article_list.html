@@ -187,7 +187,13 @@
                     }
                 })
             }
-        })
+        });
+
+        // 点击发表跳转到发表模块
+        $('#release_btn').on('click', function () {
+            parent.$('ul.level02>li:eq(1)').click();
+        });
+
     })
 
 
