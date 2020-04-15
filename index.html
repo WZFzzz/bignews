@@ -228,6 +228,7 @@
     <!-- 引入jq文件 -->
     <script src="./js/jquery-1.12.4.min.js"></script>
     <script src="./admin/libs/http.js"></script>
+
     <!-- 最新资讯模板 -->
     <script id="latest_temp" type="text/html">
     {{each data v}}
@@ -243,6 +244,7 @@
     </div>
     {{/each}}
     </script>
+
     <!-- 热点图模板 -->
     <script id="hotpic_temp" type="text/html">
     {{each data v}}
@@ -256,6 +258,7 @@
         </li>
     {{/each}}
     </script>
+
     <!-- 热门排行模板 -->
     <script id="hotrank_temp" type="text/html">
         {{each data v}}
@@ -274,6 +277,16 @@
         {{/each}}
     </script>
 
+    <!-- 最新评论模板 -->
+    <script id="comment_temp" type="text/html">
+        {{each data v}}
+        <li>
+            <span>{{v.author.substring(0,1)}}</span>
+            <b><em>{{v.author}}</em> {{v.date}}-{{v.time}}说:</b>
+            <strong>{{v.intro}}</strong>
+        </li>
+        {{/each}}
+    </script>
     <script>
         $(function () {
             //最新资讯
@@ -300,18 +313,29 @@
                 }
             });
 
-            //文章热门排行
+            //一周文章热门排行
             $.ajax({
                 type: 'get',
                 url: BigNew.baseURL + '/index/rank',
                 success: function (back) {
-                    console.log(back);
                     if (back.code == 200) {
                         let res = template('hotrank_temp', back);
                         $('.hotrank_list').html(res);
                     }
                 }
             });
+
+            //最新评论
+            $.ajax({
+                type: 'get',
+                url: BigNew.baseURL + '/index/latest_comment',
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('comment_temp', back);
+                        $('.comment_list').html(res);
+                    }
+                }
+            })
         })
     </script>
 </body>
