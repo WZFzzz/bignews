@@ -227,6 +227,75 @@
     </div>
     <!-- 导包template -->
     <script src="./js/template-web.js"></script>
+    <script src="./admin/libs/http.js"></script>
+
+    <script id="list_temp" type="text/html">
+        {{each data.data v}}
+        <div class="common_news_list">
+            <a href="./article.html?id={{v.id}}" class="list_pic"><img src="{{v.cover}}" alt=""></a>
+            <h4><a href="./article.html?id={{v.id}}">{{v.title}}</a></h4>
+            <p>{{@ v.intro}}</p>
+            <div class="new_info">
+                <span>标签：{{v.category}}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;<i class="fa fa-eye"></i>&nbsp;阅读( {{v.read}}
+                    )&nbsp;&nbsp;&nbsp;<i class="fa fa-commenting"></i>&nbsp;评论( {{v.comments}} )</span>
+                <b>发布于 {{v.data}}-{{v.time}}</b>
+            </div>
+        </div>
+        {{/each}}
+    </script>
+    <script>
+        $(function () {
+            //判断是通过何种方式进入list页面
+            let value = window.location.search;
+            let value1 = value.split('=')[0];
+            let value2 = value.split('=')[1];
+
+            if (value == '') {
+                //直接输入网址进来的
+                window.location.href = './index.html';
+            } else if (value1 == '?categoryID') {
+                //点击文章进来的
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.baseURL + '/index/search',
+                    data: {
+                        type: value2,
+                    },
+                    success: function (back) {
+                        if (back.code == 200) {
+                            if (back.data.data.length > 0) {
+                                let res = template('list_temp', back);
+                                $('div.left_con.setfr').html('<div class="list_title"><h3>' + back.data.data[0].category + '</h3></div>' + res);
+                            } else {
+                                $('div.left_con.setfr').html('<div class="list_title"><h3>没有数据~</h3></div>');
+                            }
+                        }
+                    }
+                })
+            } else {
+                //搜索关键词进来的
+                //给搜索关键词解码
+                value2 = decodeURI(value2);
+                $.ajax({
+                    type: 'get',
+                    url: BigNew.baseURL + '/index/search',
+                    data: {
+                        key: value2,
+                    },
+                    success: function (back) {
+                        if (back.code == 200) {
+                            if (back.data.data.length > 0) {
+                                let res = template('list_temp', back);
+                                $('div.left_con.setfr').html('<div class="list_title"><h3>搜索词：' + value2 + '</h3></div>' + res);
+                            } else {
+                                $('div.left_con.setfr').html('<div class="list_title"><h3>没有数据~</h3></div>');
+                            }
+                        }
+                    }
+                })
+            }
+        })
+    </script>
 </body>
 
 </html>

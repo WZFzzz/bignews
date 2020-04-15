@@ -376,6 +376,16 @@
                         $('ul.left_menu').html(res);
                     }
                 }
+            });
+
+            //文章搜索
+            $('.search_btn').on('click', function () {
+                let searchTxt = $('.search_txt').val().trim();
+                if (searchTxt == '') {
+                    alert('搜索内容不能为空');
+                    return;
+                }
+                window.location.href = './list.html?search=' + searchTxt;
             })
         }) 
     </script>
