@@ -294,6 +294,15 @@
         <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
         {{/each}}
     </script>
+
+    <!-- 文章类别模板 -->
+    <script id="category_temp" type="text/html">
+        {{each data v}}
+        <li>
+            <a href="./list.html?categoryID={{v.id}}">{{v.name}}</a>
+        </li>
+        {{/each}}
+    </script>
     <script>
         $(function () {
             //最新资讯
@@ -352,6 +361,19 @@
                     if (back.code == 200) {
                         let res = template('attention_temp', back);
                         $('.guanzhu_list').html(res);
+                    }
+                }
+            });
+
+            //文章类别
+            $.ajax({
+                type: 'get',
+                url: BigNew.baseURL + '/index/category',
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('category_temp', back);
+                        $('ul.level_two').html('<li class="up"></li>' + res);
+                        $('ul.left_menu').html(res);
                     }
                 }
             })
