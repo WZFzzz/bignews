@@ -244,8 +244,22 @@
     {{/each}}
     </script>
 
+    <script id="hotpic_temp" type="text/html">
+    {{each data v}}
+        {{if $index==0}}
+        <li class="first">
+        {{else}}
+        <li>
+        {{/if}}
+            <a href="./article.html?id={{v.id}}"><img src="{{v.cover}}" alt=""></a>
+            <p>{{v.title}}</p>
+        </li>
+    {{/each}}
+    </script>
+
     <script>
         $(function () {
+            //最新资讯
             $.ajax({
                 type: 'get',
                 url: BigNew.baseURL + '/index/latest',
@@ -253,6 +267,18 @@
                     if (back.code == 200) {
                         let res = template('latest_temp', back);
                         $('.common_news').html(res);
+                    }
+                }
+            });
+
+            //热点图新闻
+            $.ajax({
+                type: 'get',
+                url: BigNew.baseURL + '/index/hotpic',
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('hotpic_temp', back);
+                        $('.focus_list').html(res);
                     }
                 }
             })
