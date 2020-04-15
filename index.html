@@ -287,6 +287,13 @@
         </li>
         {{/each}}
     </script>
+
+    <!-- 焦点关注模板 -->
+    <script id="attention_temp" type="text/html">
+        {{each data v}}
+        <li><a href="./article.html?id={{v.id}}">{{v.intro}}</a></li>
+        {{/each}}
+    </script>
     <script>
         $(function () {
             //最新资讯
@@ -335,8 +342,20 @@
                         $('.comment_list').html(res);
                     }
                 }
+            });
+
+            //焦点关注
+            $.ajax({
+                type: 'get',
+                url: BigNew.baseURL + '/index/attention',
+                success: function (back) {
+                    if (back.code == 200) {
+                        let res = template('attention_temp', back);
+                        $('.guanzhu_list').html(res);
+                    }
+                }
             })
-        })
+        }) 
     </script>
 </body>
 
