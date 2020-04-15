@@ -243,7 +243,7 @@
     </div>
     {{/each}}
     </script>
-
+    <!-- 热点图模板 -->
     <script id="hotpic_temp" type="text/html">
     {{each data v}}
         {{if $index==0}}
@@ -255,6 +255,23 @@
             <p>{{v.title}}</p>
         </li>
     {{/each}}
+    </script>
+    <!-- 热门排行模板 -->
+    <script id="hotrank_temp" type="text/html">
+        {{each data v}}
+        <li>
+            {{if $index ==0}}
+            <span class="first">1</span>
+            {{else if $index ==1}}
+            <span class="second">2</span>
+            {{else if $index ==2}}
+            <span class="third">3</span>
+            {{else}}
+            <span>{{$index+1}}</span>
+            {{/if}}
+            <a href="./article.html?id={{v.id}}">{{v.title}}</a>
+        </li>
+        {{/each}}
     </script>
 
     <script>
@@ -281,7 +298,20 @@
                         $('.focus_list').html(res);
                     }
                 }
-            })
+            });
+
+            //文章热门排行
+            $.ajax({
+                type: 'get',
+                url: BigNew.baseURL + '/index/rank',
+                success: function (back) {
+                    console.log(back);
+                    if (back.code == 200) {
+                        let res = template('hotrank_temp', back);
+                        $('.hotrank_list').html(res);
+                    }
+                }
+            });
         })
     </script>
 </body>
